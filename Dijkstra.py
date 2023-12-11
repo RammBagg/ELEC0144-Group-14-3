@@ -52,7 +52,7 @@ graph = {
     18: {11:inf, 12: 1, 24: 1, 17: 1, 23: ROOT2},
     19: {20:inf, 13: 1, 14: ROOT2, 25: 1, 26: ROOT2},
     20: {14:inf, 13:inf, 19:inf, 25:inf, 26:inf, 27:inf, 21:inf, 15:inf, 14:inf},
-    21: {{14: inf, 15: inf, 16:inf, 22: inf, 27: inf, 28: inf, 20:inf, 26:inf},},
+    21: {14: inf, 15: inf, 16:inf, 22: inf, 27: inf, 28: inf, 20:inf, 26:inf},
     22: {15: ROOT2, 16: 1, 17: ROOT2, 23: 1, 28: 1, 29: ROOT2, 21:inf, 27:inf},
     23: {16: ROOT2, 17: 1, 18: ROOT2, 22: 1, 24: 1, 28: ROOT2, 29: 1, 30: ROOT2},
     24: {17: ROOT2, 18: 1, 23: 1, 29: ROOT2, 30: 1},
