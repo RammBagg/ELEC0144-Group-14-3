@@ -3,31 +3,61 @@ ROOT2 = math.sqrt(2)
 
 inf = float('inf')
 
+open("dijkstra_front.txt", "w").close()
+open("dijkstra_visited.txt", "w").close()
+
+front_file = open("dijkstra_front.txt", "a")
+visited_file = open("dijkstra_visited.txt", "a")
+
 def dijkstra(graph, start, end):
     # Priority queue to store vertices and their distances
     priority_queue = [(0, start)]
+    iterations = 0
     
     # Dictionary to store distances from the start vertex
     distances = {vertex: float('infinity') for vertex in graph}
     distances[start] = 0
+
+    visited = set()
+
     
     while priority_queue:
         # Get the vertex with the smallest distance
         current_distance, current_vertex = heapq.heappop(priority_queue)
         
         # Check if the current path is longer than the known distance
-        if current_distance > distances[current_vertex]:
+        if current_vertex in visited:
             continue
         
+        # Mark the current vertex as visited
+        visited.add(current_vertex)
+        
+        front = []
         # Update distances for neighboring vertices
         for neighbor, weight in graph[current_vertex].items():
             distance = current_distance + weight
             
+            front.append([weight, neighbor, current_vertex])
             # If a shorter path is found, update the distance
             if distance < distances[neighbor]:
                 distances[neighbor] = distance
                 heapq.heappush(priority_queue, (distance, neighbor))
-    
+        
+        visited_file.write(f"Iteration {iterations}: ")
+        visited_file.write(str(visited) + "\n")
+
+        front_file.write(f"Iteration {iterations}: \n")
+        write_to_file = "{ \n"
+        for s in front:
+            write_to_file += str(s) + "\n"
+        write_to_file += "} \n\n"
+
+        front_file.write(write_to_file)
+
+        iterations += 1
+
+    visited_file.close()
+    front_file.close()
     return distances[end]
 
 # Example usage:
