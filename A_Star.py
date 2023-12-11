@@ -53,18 +53,23 @@ class AStar:
         x2, y2 = goal, goal
         return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
 
-    def astar(self, start, goal):
+    def astar(self, start, goal, open_set_file=None, closed_set_file=None):
         open_set = []
         closed_set = set()
 
         heapq.heappush(open_set, (0, start, []))
 
+        iteration = 1
+
         while open_set:
-            # print(open_set)
-            # print(closed_set)
             current_cost, current_node, path = heapq.heappop(open_set)
 
             if current_node == goal:
+                if open_set_file:
+                    with open(open_set_file, 'a') as file:
+                        file.write(f"Path found at iteration {iteration}:\n")
+                        file.write(f"Open set: {open_set}\n")
+                        file.write("Path: {}\n\n".format(path + [current_node]))
                 return path + [current_node]
 
             if current_node in closed_set:
@@ -78,13 +83,36 @@ class AStar:
                     total_cost = current_cost + cost + heuristic_cost
                     heapq.heappush(open_set, (total_cost, neighbor, path + [current_node]))
 
-        return None  # No path found
+            if open_set_file:
+                with open(open_set_file, 'a') as file:
+                    file.write(f"Iteration {iteration}:\n")
+                    file.write(f"Open set: {open_set}\n\n")
+
+            if closed_set_file:
+                with open(closed_set_file, 'a') as file:
+                    file.write(f"Iteration {iteration}:\n")
+                    file.write(f"Closed set: {closed_set}\n\n")
+
+            iteration += 1
+
+        if open_set_file:
+            with open(open_set_file, 'a') as file:
+                file.write("No path found.\n")
+
+        if closed_set_file:
+            with open(closed_set_file, 'a') as file:
+                file.write("No path found.\n")
+
+        return None
 
 start_vertex = 5
 end_vertex = 32  # Specify the ending vertex
 
 astar = AStar(graph)
-path = astar.astar(start_vertex, end_vertex)
+open_set_file = "open_set_output.txt"
+closed_set_file = "closed_set_output.txt"
+path = astar.astar(start_vertex, end_vertex, open_set_file, closed_set_file)
+
 
 if path:
     print("Path found:", path)
