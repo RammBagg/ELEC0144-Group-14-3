@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import RegularPolygon
-from matplotlib.animation import FuncAnimation
 
 # Define grid size and obstacles
 grid_size = 6
@@ -21,18 +20,25 @@ start_position = 5
 target_position = 32
 start_row, start_col = (start_position - 1) // grid_size, (start_position - 1) % grid_size
 target_row, target_col = (target_position - 1) // grid_size, (target_position - 1) % grid_size
+
 grid[start_row, start_col] = 2  # Mark start with 2
 grid[target_row, target_col] = 3  # Mark target with 3
+
+# Initialize the path list
+path_taken = [(start_row, start_col)]
+
+# Calculate the path without animation
+alpha_values = np.linspace(0, 1, num=100)
+for alpha in alpha_values:
+    new_row = int((1 - alpha) * start_row + alpha * target_row)
+    new_col = int((1 - alpha) * start_col + alpha * target_col)
+    path_taken.append((new_row, new_col))
 
 # Set up the figure and axis
 fig, ax = plt.subplots()
 ticks = np.arange(-0.5, grid_size, 1)
 plt.xticks(ticks, [])
 plt.yticks(ticks, [])
-
-# Initialize the triangle
-triangle = RegularPolygon((start_col, start_row), numVertices=3, radius=0.4, orientation=np.radians(-90), color='black')
-ax.add_patch(triangle)
 
 # Add grid lines
 plt.grid(True, which='both', color='black', linewidth=1.5)
@@ -46,25 +52,15 @@ for i in range(grid_size):
 
 plt.title('Grid Visualization')
 
-# Animation function
-def update(frame):
-    global triangle  # Declare triangle as a global variable
+# Plot the path
+path_taken = np.array(path_taken)
+plt.plot(path_taken[:, 1], path_taken[:, 0], marker='o', color='red', label='Path Taken')
+plt.legend()
 
-    # Calculate the new position of the triangle
-    alpha = frame / 100.0
-    new_row = int((1 - alpha) * start_row + alpha * target_row)
-    new_col = int((1 - alpha) * start_col + alpha * target_col)
-
-    # Remove the old triangle
-    triangle.remove()
-
-    # Create a new triangle at the new position
-    triangle = RegularPolygon((new_col, new_row), numVertices=3, radius=0.4, orientation=np.radians(-90), color='black')
-    ax.add_patch(triangle)
-
-    return triangle,
-
-# Create animation
-animation = FuncAnimation(fig, update, frames=100, interval=50, blit=True)
-
+# Show the plot
 plt.show()
+
+# Print out the path taken
+print("Path taken:")
+for position in path_taken:
+    print(position)
