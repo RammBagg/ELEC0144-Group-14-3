@@ -109,8 +109,11 @@ graph = {
     36: {29: ROOT2, 30: 1, 35: 1}  
 }
 
+
 start_vertex = 5
 end_vertex = 32  # Specify the ending vertex
+
 result, path = dijkstra(graph, start_vertex, end_vertex)
+
 
 print(f"Shortest distance from {start_vertex} to {end_vertex}: {result} \nWith the path: {path}")
