@@ -111,6 +111,8 @@ end_vertex = 32  # Specify the ending vertex
 astar = AStar(graph)
 open_set_file = "open_set_output.txt"
 closed_set_file = "closed_set_output.txt"
+open(open_set_file, "w").close()
+open(closed_set_file, "w").close()
 path = astar.astar(start_vertex, end_vertex, open_set_file, closed_set_file)
 
 
