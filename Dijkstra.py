@@ -70,54 +70,10 @@ graph = {
     36: {29: ROOT2, 30: 1, 35: 1}  
 }
 
-import heapq
-
-class AStar:
-    def __init__(self, graph):
-        self.graph = graph
-
-    def heuristic(self, node, goal):
-        # Implement a heuristic function (Euclidean distance in this case)
-        x1, y1 = node
-        x2, y2 = goal
-        return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
-
-    def astar(self, start, goal):
-        open_set = []
-        closed_set = set()
-
-        heapq.heappush(open_set, (0, start, []))
-
-        while open_set:
-            current_cost, current_node, path = heapq.heappop(open_set)
-
-            if current_node == goal:
-                return path + [current_node]
-
-            if current_node in closed_set:
-                continue
-
-            closed_set.add(current_node)
-
-            for neighbor, cost in self.graph[current_node].items():
-                if neighbor not in closed_set:
-                    heuristic_cost = self.heuristic(neighbor, goal)
-                    total_cost = current_cost + cost + heuristic_cost
-                    heapq.heappush(open_set, (total_cost, neighbor, path + [current_node]))
-
-        return None  # No path found
 
 start_vertex = 5
 end_vertex = 32  # Specify the ending vertex
 
-astar = AStar(graph)
-path = astar.astar(start_vertex, end_vertex)
+result = dijkstra(graph, start_vertex, end_vertex)
 
-if path:
-    print("Path found:", path)
-else:
-    print("No path found.")
-
-# result = dijkstra(graph, start_vertex, end_vertex)
-
-# print(f"Shortest distance from {start_vertex} to {end_vertex}: {result}")
+print(f"Shortest distance from {start_vertex} to {end_vertex}: {result}")

@@ -1,101 +1,91 @@
-import math
-import heapq
-import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle
+import heapq, math
+ROOT2 = math.sqrt(2)
 
-class Node:
-    def __init__(self, position):
-        self.position = position
-        self.g = float('inf')  # cost from start
-        self.h = 0  # heuristic (estimated cost to goal)
-        self.f = 0  # total cost
-        self.predecessor = None
+inf = float('inf')
 
-    def __lt__(self, other):
-        return self.f < other.f
 
-def is_valid(x, y):
-    return 1 <= x <= 6 and 1 <= y <= 6
+# Example usage:
+graph = {
+    1: {7: 1, 2:inf, 8: ROOT2},
+    2: {1: inf, 7:inf, 8:inf, 9:inf, 3:inf},
+    3: {2:inf, 8: ROOT2, 9: ROOT2, 4: 1},
+    4: {10:inf, 11:inf, 9: ROOT2, 5: 1, 3: 1},
+    5: {11:inf, 10:inf, 4: 1, 6: 1, 12: ROOT2},
+    6: {12: 1, 5: 1, 11:inf},
+    7: {1: 1, 8: 1, 14: ROOT2, 13: 1},
+    8: {2:inf, 1: ROOT2, 7: 1, 13: ROOT2, 14: 1, 15: ROOT2, 9: 1, 3: ROOT2},
+    9: {2:inf, 3: 1, 15: 1, 8: 1, 4: ROOT2, 14: ROOT2, 16: ROOT2, 10:inf},
+    10: {3:inf, 4:inf, 5:inf, 11:inf, 17:inf, 16:inf, 15:inf, 9:inf},
+    11: {5:inf, 6:inf, 12:inf, 18:inf, 17:inf, 16:inf, 10:inf, 4:inf},
+    12: {11:inf, 6: 1, 18: 1, 5: ROOT2, 17: ROOT2},
+    13: {20:inf, 7: 1, 14: 1, 19: 1, 8: ROOT2},
+    14: {20:inf, 8: 1, 9: ROOT2, 15: 1, 13: 1, 7: ROOT2, 19: ROOT2, 21:inf},
+    15: {9: 1, 14: 1, 16: 1, 22: ROOT2, 8: ROOT2, 20:inf, 21:inf, 10:inf},
+    16: {22: 1, 15: 1, 17: 1, 9: ROOT2, 23: ROOT2},
+    17: {23: 1, 18: 1, 16: 1, 22: ROOT2, 24: ROOT2},
+    18: {11:inf, 12: 1, 24: 1, 17: 1, 23: ROOT2},
+    19: {20:inf, 13: 1, 14: ROOT2, 25: 1, 26: ROOT2},
+    20: {14:inf, 13:inf, 19:inf, 25:inf, 26:inf, 27:inf, 21:inf, 15:inf, 14:inf},
+    21: {14: inf, 15: inf, 16:inf, 22: inf, 27: inf, 28: inf, 20:inf, 26:inf},
+    22: {15: ROOT2, 16: 1, 17: ROOT2, 23: 1, 28: 1, 29: ROOT2, 21:inf, 27:inf},
+    23: {16: ROOT2, 17: 1, 18: ROOT2, 22: 1, 24: 1, 28: ROOT2, 29: 1, 30: ROOT2},
+    24: {17: ROOT2, 18: 1, 23: 1, 29: ROOT2, 30: 1},
+    25: {19: 1, 26: 1, 31: 1, 32: ROOT2, 20:inf},
+    26: {19: ROOT2, 25: 1, 31: ROOT2, 32: 1, 33: inf, 20:inf, 21:inf, 27:inf},
+    27: {20:inf, 21:inf, 22:inf, 26:inf, 28:inf, 32:inf, 33:inf, 34:inf},
+    28: {22: 1, 23: ROOT2, 29: 1, 33: inf, 34: 1, 35: ROOT2, 21:inf, 27:inf},
+    29: {22: 1, 24: 1, 28: ROOT2, 29: 1, 30: ROOT2, 34: ROOT2, 35: 1, 36: ROOT2},
+    30: {23: ROOT2, 24: 1, 29: 1, 35: ROOT2, 36: 1},
+    31: {25: 1, 26: ROOT2, 32: 1},
+    32: {25: ROOT2, 26: 1, 31: 1, 33: inf, 27:inf},
+    33: {26: inf, 28: inf, 32: inf, 34: inf, 27:inf},
+    34: {28: 1, 29: ROOT2, 33: inf, 35: 1, 27:inf},
+    35: {28: ROOT2, 29: 1, 30: ROOT2, 34: 1, 36: 1},
+    36: {29: ROOT2, 30: 1, 35: 1}  
+}
 
-def calculate_cost(current, neighbor):
-    if abs(current.position[0] - neighbor.position[0]) + abs(current.position[1] - neighbor.position[1]) == 2:
-        return math.sqrt(2)  # diagonal movement
-    else:
-        return 1  # horizontal or vertical movement
+class AStar:
+    def __init__(self, graph):
+        self.graph = graph
 
-def plot_grid(ax, obstacles, start, goal, path):
-    for i in range(1, 7):
-        for j in range(1, 7):
-            if (i, j) in obstacles:
-                ax.add_patch(Rectangle((i - 0.5, j - 0.5), 1, 1, facecolor='black'))
-            else:
-                ax.add_patch(Rectangle((i - 0.5, j - 0.5), 1, 1, edgecolor='black', facecolor='white'))
+    def heuristic(self, node, goal):
+        # Implement a heuristic function (Euclidean distance in this case)
+        x1, y1 = node, node
+        x2, y2 = goal, goal
+        return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
 
-    ax.add_patch(Rectangle((start.position[0] - 0.5, start.position[1] - 0.5), 1, 1, facecolor='green'))
-    ax.add_patch(Rectangle((goal.position[0] - 0.5, goal.position[1] - 0.5), 1, 1, facecolor='red'))
+    def astar(self, start, goal):
+        open_set = []
+        closed_set = set()
 
-    if path:
-        path_x, path_y = zip(*path)
-        ax.plot(path_x, path_y, marker='o', color='blue')
+        heapq.heappush(open_set, (0, start, []))
 
-    ax.set_xlim(0.5, 6.5)
-    ax.set_ylim(0.5, 6.5)
-    ax.set_aspect('equal', 'box')
-    ax.invert_yaxis()
+        while open_set:
+            current_cost, current_node, path = heapq.heappop(open_set)
 
-def astar(start, goal, obstacles):
-    open_set = [start]
-    closed_set = set()
+            if current_node == goal:
+                return path + [current_node]
 
-    fig, ax = plt.subplots()
+            if current_node in closed_set:
+                continue
 
-    while open_set:
-        current = heapq.heappop(open_set)
-        closed_set.add(current.position)
+            closed_set.add(current_node)
 
-        if current.position == goal.position:
-            path = []
-            while current:
-                path.append(current.position)
-                current = current.predecessor
-            path.reverse()
-            
-            plot_grid(ax, obstacles, start, goal, path)
-            plt.show()
-            
-            return path
+            for neighbor, cost in self.graph[current_node].items():
+                if neighbor not in closed_set:
+                    heuristic_cost = self.heuristic(neighbor, goal)
+                    total_cost = current_cost + cost + heuristic_cost
+                    heapq.heappush(open_set, (total_cost, neighbor, path + [current_node]))
 
-        for i in range(-1, 2):
-            for j in range(-1, 2):
-                if i == 0 and j == 0:
-                    continue
+        return None  # No path found
 
-                neighbor_pos = (current.position[0] + i, current.position[1] + j)
-                if is_valid(*neighbor_pos) and neighbor_pos not in obstacles and neighbor_pos not in closed_set:
-                    neighbor = Node(neighbor_pos)
-                    tentative_g = current.g + calculate_cost(current, neighbor)
+start_vertex = 5
+end_vertex = 32  # Specify the ending vertex
 
-                    if tentative_g < neighbor.g:
-                        neighbor.g = tentative_g
-                        neighbor.h = math.sqrt((goal.position[0] - neighbor.position[0]) ** 2 +
-                                              (goal.position[1] - neighbor.position[1]) ** 2)
-                        neighbor.f = neighbor.g + neighbor.h
-                        neighbor.predecessor = current
+astar = AStar(graph)
+path = astar.astar(start_vertex, end_vertex)
 
-                        if neighbor not in open_set:
-                            heapq.heappush(open_set, neighbor)
-
-    return None
-
-# Define grid, obstacles, and nodes
-start_node = Node((3, 4))  # Update to the coordinates of grid number 16
-goal_node = Node((5, 6))   # Update to the coordinates of grid number 32
-obstacles = {(2, 2), (4, 4), (5, 4), (3, 3), (4, 3), (6, 3), (3, 5), (6, 2), (3, 4)}
-additional_obstacle = (6, 3)
-obstacles.add(additional_obstacle)
-
-# Run A* algorithm
-astar_path = astar(start_node, goal_node, obstacles)
-
-# Print final path
-print("A* Path:", astar_path)
+if path:
+    print("Path found:", path)
+else:
+    print("No path found.")
