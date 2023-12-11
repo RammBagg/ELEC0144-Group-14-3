@@ -19,8 +19,7 @@ def dijkstra(graph, start, end):
     distances[start] = 0
 
     visited = set()
-
-    
+  
     while priority_queue:
         # Get the vertex with the smallest distance
         current_distance, current_vertex = heapq.heappop(priority_queue)
@@ -58,7 +57,17 @@ def dijkstra(graph, start, end):
 
     visited_file.close()
     front_file.close()
-    return distances[end]
+
+    # Backpropagation to find the shortest path
+    path = []
+    current_vertex = end
+    while current_vertex != start:
+        path.insert(0, current_vertex)
+        current_vertex = min(graph[current_vertex], key=lambda x: distances[x])
+
+    path.insert(0, start)
+
+    return distances[end], path
 
 # Example usage:
 graph = {
@@ -102,6 +111,6 @@ graph = {
 
 start_vertex = 5
 end_vertex = 32  # Specify the ending vertex
-result = dijkstra(graph, start_vertex, end_vertex)
+result, path = dijkstra(graph, start_vertex, end_vertex)
 
-print(f"Shortest distance from {start_vertex} to {end_vertex}: {result}")
+print(f"Shortest distance from {start_vertex} to {end_vertex}: {result} \nWith the path: {path}")
