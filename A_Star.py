@@ -3,7 +3,6 @@ ROOT2 = math.sqrt(2)
 
 inf = float('inf')
 
-
 # Example usage:
 graph = {
     1: {7: 1, 2:inf, 8: ROOT2},
@@ -61,6 +60,8 @@ class AStar:
         heapq.heappush(open_set, (0, start, []))
 
         while open_set:
+            # print(open_set)
+            # print(closed_set)
             current_cost, current_node, path = heapq.heappop(open_set)
 
             if current_node == goal:
