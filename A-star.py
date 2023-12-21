@@ -6,22 +6,33 @@ class Grid:
         self.rows = rows
         self.cols = cols
         self.obstacles = obstacles
-        self.graph = [[i * cols + j + 1 for j in range(cols)] for i in range(rows)]
+        self.directions = [(0, 1), (1, 0), (0, -1), (-1, 0), (-1, -1), (-1, 1), (1, 1), (1, -1)]
+        self.grid = [[i * cols + j + 1 for j in range(cols)] for i in range(rows)]
 
+    
     def is_valid(self, x, y):
         return 0 <= x < self.rows and 0 <= y < self.cols
 
     def is_obstacle(self, x, y):
-        return self.graph[x][y] in self.obstacles
+        return self.grid[x][y] in self.obstacles
 
 class AStar:
     def __init__(self, grid):
         self.grid = grid
         self.ROOT2 = math.sqrt(2)
 
-    def heuristic(self, a, b):
-        x1, y1 = (a - 1) // self.grid.cols, (a - 1) % self.grid.cols
-        x2, y2 = (b - 1) // self.grid.cols, (b - 1) % self.grid.cols
+    def get_pos(self,x):
+        coords = [(x - 1) // self.grid.cols, (x - 1) % self.grid.cols]
+        return coords
+    
+    def get_vertex(self, x, y):
+        return self.grid[x][y]
+
+    def heuristic(self, a, b): # here a and b represent the 2 point we are taking the heuristic between
+        x1, y1 = self.get_pos(a)
+        x2, y2 = self.get_pos(b)
+
+        # this calculated the euclidian distance between 
         return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
     def astar(self, start, end):
@@ -43,11 +54,11 @@ class AStar:
             visited.add(current_vertex)
 
             front = []
-            for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0), (-1, -1), (-1, 1), (1, 1), (1, -1)]:
+            for dx, dy in grid.directions:
                 new_x, new_y = x + dx, y + dy
                 if self.grid.is_valid(new_x, new_y):
                     weight = 1 if dx == 0 or dy == 0 else self.ROOT2
-                    neighbour = self.grid.graph[new_x][new_y]
+                    neighbour = self.grid.grid[new_x][new_y]
                     if self.grid.is_obstacle(new_x, new_y):
                         continue
                     distance = current_distance + weight
