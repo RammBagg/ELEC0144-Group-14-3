@@ -1,4 +1,4 @@
-import heapq
+import heapq, math
 from abc import abstractmethod
 from grid import Grid
 
@@ -11,22 +11,44 @@ class Dijkstra:
 
     '''
     
-    def __init__(self, grid) -> None:        
+    def __init__(self, grid: 'Grid') -> None:      
+        '''
+        Initialise variables for the Dikjstra algorithm. Requires a grid to perform
+        the algorithm on.
+
+        :param grid: of type 'Grid'.
+        
+        '''  
         self.clear_files()
         self.front_file = open("dijkstra_front.txt", "a")
         self.visited_file = open("dijkstra_visited.txt", "a")
         self.grid = grid
         self.front = []
         self.visited = set()
+        self.ROOT2 = math.sqrt(2)
         # Dictionary to store distances from the start vertex
         self.distances = {vertex: float('infinity') for vertex in range(1, self.grid.V + 1)}        
 
     @abstractmethod
-    def clear_files(self):
+    def clear_files(self) -> None:
+        '''
+        Clear the text files before running the algorithm again. 
+        This is to ensure previous data of previous runs does not conflict with any new
+        data written to the files. 
+        '''
         open("dijkstra_front.txt", "w").close()
         open("dijkstra_visited.txt", "w").close()
 
-    def update_files(self, iterations):
+    def update_files(self, iterations: int) -> None:
+        '''
+        Write the current progress of the dikjstra algorithm, including the visited 
+        list which contains vertices which have been explored, and the front list which 
+        is the vertices currently being considered at a particular iteration of the algorithm.
+
+        :param iterations: An integer value indicating progress of the algorithm by the number
+        of the loops that have occurred so far.
+
+        '''
         self.visited_file.write(f"Iteration {iterations}: ")
         self.visited_file.write(str(self.visited) + "\n")
 
@@ -38,7 +60,18 @@ class Dijkstra:
 
         self.front_file.write(write_to_file)
     
-    def backpropagation(self, start, end):
+    def backpropagation(self, start: int, end: int) -> [int]:
+        '''
+        Backpropagation to find the shortest path after dikjstra algorithm has finished finding
+        the matrix of minimum distances from the starting vertex to all other vertices of the 
+        graph.
+
+        :param start: An integer value representing which cell is the path should start from.
+        :param end: An integer value representing the cell the path should end at.
+
+        :returns: The path is returned a list of integers, where each integer represents the cells
+                  the robot must travel through to reach its destination.
+        '''
         # Backpropagation to find the shortest path
         path = []
         current_vertex = end
@@ -56,7 +89,7 @@ class Dijkstra:
         path.insert(0, start)
         return path
 
-    def run(self, start, end):
+    def run(self, start: int, end: int) -> None:
         # Priority queue to store vertices and their distances
         priority_queue = [(0, start)]
         iterations = 0
@@ -77,7 +110,7 @@ class Dijkstra:
                 # Update distances for neighboring vertices
                 for delta_x, delta_y in self.grid.directions:
                     if self.grid.is_valid(coords[0] + delta_x, coords[1] + delta_y):
-                        weight = self.grid.get_weight(delta_x, delta_y)
+                        weight = 1 if dx == 0 or dy == 0 else self.ROOT2
                         neighbour = self.grid.get_vertex(coords[0] + delta_x, coords[1] + delta_y)
                         if self.grid.is_obstacle(neighbour):
                             continue
