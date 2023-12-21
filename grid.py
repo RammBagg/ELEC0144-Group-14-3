@@ -18,8 +18,8 @@ class Grid:
         '''
         self.rows = rows
         self.cols = cols
-        self.V = self.rows * self.cols
         self.obstacles = obstacles
+        self.V = self.rows * self.cols
         self.layout = [[i * cols + j + 1 for j in range(cols)] for i in range(rows)]
         if directions == "8-way":
             self.directions = [(0, 1), (1, 0), (0, -1), (-1, 0), (-1, -1), (-1, 1), (1, 1), (1, -1)]

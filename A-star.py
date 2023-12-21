@@ -5,11 +5,24 @@ from grid import Grid
 class AStar:
     def __init__(self, grid):
         self.grid = grid
-        self.ROOT2 = math.sqrt(2)
+        self.front = []
+        self.visited = set()
+        self.front_file = open("astar_front.txt", "a")
+        self.visited_file = open("astar_visited.txt", "a")
 
-    def heuristic(self, a, b):
-        x1, y1 = (a - 1) // self.grid.cols, (a - 1) % self.grid.cols
-        x2, y2 = (b - 1) // self.grid.cols, (b - 1) % self.grid.cols
+
+    def get_pos(self,x):
+        coords = [(x - 1) // self.grid.cols, (x - 1) % self.grid.cols]
+        return coords
+    
+    def get_vertex(self, x, y):
+        return self.grid[x][y]
+
+    def heuristic(self, a, b): # here a and b represent the 2 point we are taking the heuristic between
+        x1, y1 = self.get_pos(a)
+        x2, y2 = self.get_pos(b)
+
+        # this calculated the euclidian distance between 
         return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
     def astar(self, start, end):
@@ -19,23 +32,22 @@ class AStar:
         distances = {vertex: float('infinity') for vertex in range(1, self.grid.rows * self.grid.cols + 1)}
         distances[start] = 0
 
-        visited = set()
 
         while priority_queue:
             current_total_cost, current_distance, current_vertex = heapq.heappop(priority_queue)
             x, y = (current_vertex - 1) // self.grid.cols, (current_vertex - 1) % self.grid.cols
 
-            if current_vertex in visited or self.grid.is_obstacle(x, y):
+            if current_vertex in self.visited or self.grid.is_obstacle(x, y):
                 continue
 
-            visited.add(current_vertex)
+            self.visited.add(current_vertex)
 
             front = []
-            for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0), (-1, -1), (-1, 1), (1, 1), (1, -1)]:
+            for dx, dy in self.grid.directions:
                 new_x, new_y = x + dx, y + dy
                 if self.grid.is_valid(new_x, new_y):
-                    weight = 1 if dx == 0 or dy == 0 else self.ROOT2
-                    neighbour = self.grid.graph[new_x][new_y]
+                    weight = 1 if dx == 0 or dy == 0 else math.sqrt(2)
+                    neighbour = self.grid.layout[new_x][new_y]
                     if self.grid.is_obstacle(new_x, new_y):
                         continue
                     distance = current_distance + weight
@@ -46,8 +58,11 @@ class AStar:
                         distances[neighbour] = distance
                         heapq.heappush(priority_queue, (total_cost, distance, neighbour))
 
-            self.write_to_files(iterations, visited, front)
+            self.write_to_files(iterations, self.visited, front)
             iterations += 1
+
+        self.visited_file.close()
+        self.front_file.close()
 
         return distances[end]
 
