@@ -87,7 +87,7 @@ def astar(graph, start, end, obstacles):
 
     return distances[end], path
 
-# Initialize the grid with obstacles
+# Initialize the graph with obstacles
 graph = [
     [1, 2, 3, 4, 5, 6],
     [7, 8, 9, 10, 11, 12],
