@@ -1,18 +1,6 @@
 import heapq
 import math
-
-class Grid:
-    def __init__(self, rows, cols, obstacles):
-        self.rows = rows
-        self.cols = cols
-        self.obstacles = obstacles
-        self.graph = [[i * cols + j + 1 for j in range(cols)] for i in range(rows)]
-
-    def is_valid(self, x, y):
-        return 0 <= x < self.rows and 0 <= y < self.cols
-
-    def is_obstacle(self, x, y):
-        return self.graph[x][y] in self.obstacles
+from grid import Grid
 
 class AStar:
     def __init__(self, grid):

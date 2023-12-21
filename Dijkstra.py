@@ -1,5 +1,6 @@
 import heapq, math
 from abc import abstractmethod
+from grid import Grid
 
 class Dijkstra:
     '''
@@ -10,36 +11,22 @@ class Dijkstra:
 
     '''
     
-    def __init__(self, rows, cols, obstacles) -> None:        
+    def __init__(self, grid) -> None:        
         self.clear_files()
         self.inf = float('inf')
-        self.directions = [[0, 1], [1, 0], [0, -1], [-1, 0], [-1, -1], [-1, 1], [1, 1], [1, -1]]
         self.ROOT2 = math.sqrt(2)
         self.front_file = open("dijkstra_front.txt", "a")
         self.visited_file = open("dijkstra_visited.txt", "a")
-        self.V = rows * cols
-        self.rows = rows
-        self.cols = cols
-        self.grid = []
+        self.grid = grid
         self.front = []
         self.visited = set()
         # Dictionary to store distances from the start vertex
-        self.distances = {vertex: float('infinity') for vertex in range(1, self.V + 1)}        
-        self.obstacles = obstacles
-        self.initialise_grid()
+        self.distances = {vertex: float('infinity') for vertex in range(1, self.grid.V + 1)}        
 
     @abstractmethod
     def clear_files(self):
         open("dijkstra_front.txt", "w").close()
         open("dijkstra_visited.txt", "w").close()
-
-    def initialise_grid(self):
-        v = 1
-        for i in range(self.rows):
-            self.grid.append([])
-            for j in range(self.cols):
-                self.grid[i].append(v)
-                v += 1
 
     def update_files(self, iterations):
         self.visited_file.write(f"Iteration {iterations}: ")
@@ -59,11 +46,11 @@ class Dijkstra:
         current_vertex = end
         while current_vertex != start:
             path.insert(0, current_vertex)
-            coords = [(current_vertex - 1) // self.rows, (current_vertex - 1) % self.cols]
-            for d in self.directions:
-                if coords[0] + d[0] < self.rows and coords[0] + d[0] >= 0 and coords[1] + d[1] < self.cols and coords[1] + d[1] >= 0:
-                    v = self.grid[coords[0] + d[0]][coords[1] + d[1]]
-                    if v in self.obstacles:
+            coords = grid.get_pos(current_vertex)
+            for delta_x, delta_y in self.grid.directions:
+                if self.grid.is_valid(coords[0] + delta_x, coords[1] + delta_y):
+                    v = self.grid.get_vertex(coords[0] + delta_x, coords[1] + delta_y)
+                    if self.grid.is_obstacle(v):
                         continue
                     if self.distances[v] < self.distances[current_vertex]:
                         current_vertex = v
@@ -80,7 +67,7 @@ class Dijkstra:
         while priority_queue:
                 # Get the vertex with the smallest distance
                 current_distance, current_vertex = heapq.heappop(priority_queue)
-                coords = [(current_vertex - 1) // self.rows, (current_vertex - 1) % self.cols]
+                coords = grid.get_pos(current_vertex)
 
                 # Check if the current path is longer than the known distance
                 if current_vertex in self.visited:
@@ -90,15 +77,11 @@ class Dijkstra:
                 self.visited.add(current_vertex)
                 
                 # Update distances for neighboring vertices
-                for d in self.directions:
-                    if coords[0] + d[0] < self.rows and coords[0] + d[0] >= 0 and coords[1] + d[1] < self.cols and coords[1] + d[1] >= 0:
-                        weight = 0
-                        if d[0] == 0 or d[1] == 0:
-                            weight = 1
-                        else:
-                            weight = self.ROOT2
-                        neighbour = self.grid[coords[0] + d[0]][coords[1] + d[1]]
-                        if neighbour in self.obstacles:
+                for delta_x, delta_y in self.grid.directions:
+                    if self.grid.is_valid(coords[0] + delta_x, coords[1] + delta_y):
+                        weight = self.grid.get_weight(delta_x, delta_y)
+                        neighbour = self.grid.get_vertex(coords[0] + delta_x, coords[1] + delta_y)
+                        if self.grid.is_obstacle(neighbour):
                             continue
                         distance = current_distance + weight
                         
@@ -125,9 +108,11 @@ class Dijkstra:
 start_vertex = 5
 end_vertex = 32  # Specify the ending vertex
 
-obstacles = [10, 11, 20, 21, 27]
+obstacles = [10, 11, 20, 21, 27, 33]
 
-d = Dijkstra(6, 6, obstacles=obstacles)
+grid = Grid(6, 6, obstacles)
+
+d = Dijkstra(grid)
 
 d.run(start_vertex, end_vertex)
 
