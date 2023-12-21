@@ -43,7 +43,7 @@ class AStar:
             self.visited.add(current_vertex)
 
             front = []
-            for dx, dy in grid.directions:
+            for dx, dy in self.grid.directions:
                 new_x, new_y = x + dx, y + dy
                 if self.grid.is_valid(new_x, new_y):
                     weight = 1 if dx == 0 or dy == 0 else math.sqrt(2)
@@ -60,6 +60,9 @@ class AStar:
 
             self.write_to_files(iterations, self.visited, front)
             iterations += 1
+
+        self.visited_file.close()
+        self.front_file.close()
 
         return distances[end]
 
