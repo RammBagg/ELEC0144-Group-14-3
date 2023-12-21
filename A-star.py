@@ -1,5 +1,6 @@
 import heapq
 import math
+from grid import Grid
 
 class AStar:
     def __init__(self, grid):
