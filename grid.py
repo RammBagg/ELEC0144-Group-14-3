@@ -6,7 +6,6 @@ class Grid:
         self.rows = rows
         self.cols = cols
         
-        self.V = self.rows * self.cols
         self.obstacles = obstacles
         self.layout = [[i * cols + j + 1 for j in range(cols)] for i in range(rows)]
         self.directions = [(0, 1), (1, 0), (0, -1), (-1, 0), (-1, -1), (-1, 1), (1, 1), (1, -1)]
@@ -29,8 +28,3 @@ class Grid:
     def get_vertex(self, x, y):
         return self.layout[x][y]
     
-    def get_weight(self, x, y):
-        if x == 0 or y == 0:
-            return 1
-        else:
-            return math.sqrt(2)
