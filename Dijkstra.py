@@ -110,7 +110,7 @@ class Dijkstra:
                 # Update distances for neighboring vertices
                 for delta_x, delta_y in self.grid.directions:
                     if self.grid.is_valid(coords[0] + delta_x, coords[1] + delta_y):
-                        weight = 1 if dx == 0 or dy == 0 else self.ROOT2
+                        weight = 1 if delta_x == 0 or delta_y == 0 else math.sqrt(2)
                         neighbour = self.grid.get_vertex(coords[0] + delta_x, coords[1] + delta_y)
                         if self.grid.is_obstacle(neighbour):
                             continue
