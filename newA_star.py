@@ -91,7 +91,7 @@ def astar(graph, start, end, obstacles):
 graph = [
     [1, 2, 3, 4, 5, 6],
     [7, 8, 9, 10, 11, 12],
-    [13, 14, -1, 16, 17, 18],
+    [13, 14, 15, 16, 17, 18],
     [19, 20, 21, 22, 23, 24],
     [25, 26, 27, 28, 29, 30],
     [31, 32, 33, 34, 35, 36]
@@ -99,7 +99,7 @@ graph = [
 
 obstacles = [2, 10, 11, 20, 21, 27, 33]
 
-start_vertex = 5
+start_vertex = 16
 end_vertex = 32
 
 result, path = astar(graph, start_vertex, end_vertex, obstacles)

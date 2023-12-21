@@ -77,7 +77,7 @@ grid = [
 ]
 
 obstacles = [2, 10, 11, 20, 21, 27, 33]
-start_position = 5
+start_position = 16
 end_position = 32
 
 path, visited_nodes = astar(grid, start_position, end_position)
