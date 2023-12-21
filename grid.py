@@ -5,7 +5,6 @@ class Grid:
     def __init__(self, rows, cols, obstacles):
         self.rows = rows
         self.cols = cols
-        
         self.obstacles = obstacles
         self.layout = [[i * cols + j + 1 for j in range(cols)] for i in range(rows)]
         self.directions = [(0, 1), (1, 0), (0, -1), (-1, 0), (-1, -1), (-1, 1), (1, 1), (1, -1)]
