@@ -1,4 +1,4 @@
-import heapq, math
+import heapq
 from abc import abstractmethod
 from grid import Grid
 
@@ -13,8 +13,6 @@ class Dijkstra:
     
     def __init__(self, grid) -> None:        
         self.clear_files()
-        self.inf = float('inf')
-        self.ROOT2 = math.sqrt(2)
         self.front_file = open("dijkstra_front.txt", "a")
         self.visited_file = open("dijkstra_visited.txt", "a")
         self.grid = grid
