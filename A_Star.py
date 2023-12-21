@@ -1,9 +1,7 @@
 import heapq
 
 def heuristic(node, goal):
-    x1, y1 = node
-    x2, y2 = goal
-    return abs(x1 - x2) + abs(y1 - y2)
+    return abs(node - goal)
 
 def astar(grid, start, end):
     priority_queue = [(0, start)]
@@ -41,26 +39,28 @@ def astar(grid, start, end):
     return None, visited
 
 def get_neighbors(node, grid):
-    x, y = node
     neighbors = []
 
-    for i in range(max(0, x-1), min(6, x+2)):
-        for j in range(max(0, y-1), min(6, y+2)):
-            if (i, j) != node and grid[i][j] not in obstacles:
-                neighbors.append((i, j))
+    for i in range(len(grid)):
+        for j in range(len(grid[0])):
+            if grid[i][j] == node:
+                for ii in range(max(0, i-1), min(len(grid), i+2)):
+                    for jj in range(max(0, j-1), min(len(grid[0]), j+2)):
+                        if (ii, jj) != (i, j) and grid[ii][jj] not in obstacles:
+                            neighbors.append(grid[ii][jj])
 
     return neighbors
 
 def print_grid(grid, start, end, path, visited):
-    for i in range(6):
-        for j in range(6):
-            if (i, j) == start:
+    for i in range(len(grid)):
+        for j in range(len(grid[0])):
+            if grid[i][j] == start:
                 print("S", end='\t')
-            elif (i, j) == end:
+            elif grid[i][j] == end:
                 print("E", end='\t')
-            elif (i, j) in path:
+            elif grid[i][j] in path:
                 print("*", end='\t')
-            elif (i, j) in visited:
+            elif grid[i][j] in visited:
                 print("V", end='\t')
             else:
                 print(grid[i][j], end='\t')
@@ -77,8 +77,8 @@ grid = [
 ]
 
 obstacles = [2, 10, 11, 20, 21, 27, 33]
-start_position = (0, 0)
-end_position = (5, 5)
+start_position = 5
+end_position = 32
 
 path, visited_nodes = astar(grid, start_position, end_position)
 
