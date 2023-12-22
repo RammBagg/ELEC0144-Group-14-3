@@ -75,33 +75,41 @@ class AStar:
         distances[start] = 0
 
         while priority_queue:
+            # Extract the vertex with the lowest total cost from the priority queue
             current_total_cost, current_distance, current_vertex = heapq.heappop(priority_queue)
             x, y = (current_vertex - 1) // self.grid.cols, (current_vertex - 1) % self.grid.cols
 
+            # Skip visited vertices and obstacles
             if current_vertex in self.visited or self.grid.is_obstacle(x, y):
                 continue
 
+            # Mark the current vertex as visited
             self.visited.add(current_vertex)
 
-            front = []
+            front = []  # Temporary list to store the neighbors of the current vertex
             for dx, dy in self.grid.directions:
                 new_x, new_y = x + dx, y + dy
                 if self.grid.is_valid(new_x, new_y):
-                    weight = 1 if dx == 0 or dy == 0 else math.sqrt(2)
+                    weight = 1 if dx == 0 or dy == 0 else math.sqrt(2)  # Calculate the movement cost
                     neighbour = self.grid.layout[new_x][new_y]
                     if self.grid.is_obstacle(new_x, new_y):
                         continue
                     distance = current_distance + weight
                     total_cost = distance + self.heuristic(neighbour, end)
 
+                    # Add the neighbor to the temporary front list
                     front.append([weight, neighbour, current_vertex])
+
+                    # Update the distance and total cost if a shorter path is found
                     if distance < distances[neighbour]:
                         distances[neighbour] = distance
                         heapq.heappush(priority_queue, (total_cost, distance, neighbour))
 
+            # Log the current state to files
             self.write_to_files(iterations, self.visited, front)
             iterations += 1
 
+        # Close the log files
         self.visited_file.close()
         self.front_file.close()
 
@@ -125,7 +133,6 @@ class AStar:
                 front_file.write(f"{str(s)}\n")
             front_file.write("}\n\n")
 
-# Example usage
 rows = 6
 cols = 6
 obstacles = [2, 10, 11, 20, 21, 27, 33]
