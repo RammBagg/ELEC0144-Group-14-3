@@ -4,34 +4,75 @@ from grid import Grid
 
 class AStar:
     def __init__(self, grid):
+        """
+        Initialize the AStar object with the given grid.
+
+        Parameters:
+        - grid (Grid): The grid on which the A* algorithm will be applied.
+        """
         self.grid = grid
-        self.front = []
-        self.visited = set()
-        self.front_file = open("astar_front.txt", "a")
-        self.visited_file = open("astar_visited.txt", "a")
+        self.front = []  # Current frontiers during the A* algorithm
+        self.visited = set()  # Set of visited vertices
+        self.front_file = open("astar_front.txt", "a")  # File to log frontiers
+        self.visited_file = open("astar_visited.txt", "a")  # File to log visited vertices
 
+    def get_pos(self, x):
+        """
+        Convert vertex number to grid coordinates.
 
-    def get_pos(self,x):
+        Parameters:
+        - x (int): Vertex number.
+
+        Returns:
+        - tuple: (row, col) coordinates in the grid.
+        """
         coords = [(x - 1) // self.grid.cols, (x - 1) % self.grid.cols]
         return coords
     
     def get_vertex(self, x, y):
+        """
+        Get the vertex number for the given grid coordinates.
+
+        Parameters:
+        - x (int): Row coordinate.
+        - y (int): Column coordinate.
+
+        Returns:
+        - int: Vertex number.
+        """
         return self.grid[x][y]
 
-    def heuristic(self, a, b): # here a and b represent the 2 point we are taking the heuristic between
+    def heuristic(self, a, b):
+        """
+        Calculate the heuristic (Euclidean distance) between two vertices.
+
+        Parameters:
+        - a (int): Vertex number for point A.
+        - b (int): Vertex number for point B.
+
+        Returns:
+        - float: Euclidean distance between A and B.
+        """
         x1, y1 = self.get_pos(a)
         x2, y2 = self.get_pos(b)
-
-        # this calculated the euclidian distance between 
         return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
     def astar(self, start, end):
+        """
+        Run the A* algorithm to find the shortest path from start to end.
+
+        Parameters:
+        - start (int): Vertex number for the starting point.
+        - end (int): Vertex number for the destination point.
+
+        Returns:
+        - float: Shortest distance from start to end.
+        """
         priority_queue = [(0 + self.heuristic(start, end), 0, start)]
         iterations = 0
 
         distances = {vertex: float('infinity') for vertex in range(1, self.grid.rows * self.grid.cols + 1)}
         distances[start] = 0
-
 
         while priority_queue:
             current_total_cost, current_distance, current_vertex = heapq.heappop(priority_queue)
@@ -67,6 +108,14 @@ class AStar:
         return distances[end]
 
     def write_to_files(self, iterations, visited, front):
+        """
+        Write information about visited vertices and current frontiers to files.
+
+        Parameters:
+        - iterations (int): Current iteration number.
+        - visited (set): Set of visited vertices.
+        - front (list): List of current frontiers.
+        """
         with open("astar_visited.txt", "a") as visited_file:
             visited_file.write(f"Iteration {iterations}: {str(visited)}\n")
 
@@ -75,7 +124,6 @@ class AStar:
             for s in front:
                 front_file.write(f"{str(s)}\n")
             front_file.write("}\n\n")
-
 
 # Example usage
 rows = 6
