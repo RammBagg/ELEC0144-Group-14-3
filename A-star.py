@@ -3,7 +3,7 @@ import math
 from grid import Grid
 
 class AStar:
-    def __init__(self, grid):
+    def __init__(self, grid: Grid) -> None:
         """
         Initialize the AStar object with the given grid.
 
@@ -11,12 +11,12 @@ class AStar:
         - grid (Grid): The grid on which the A* algorithm will be applied.
         """
         self.grid = grid
-        self.front = []  # Current frontiers during the A* algorithm
+        self.front = []  # Front set
         self.visited = set()  # Set of visited vertices
-        self.front_file = open("astar_front.txt", "a")  # File to log frontiers
+        self.front_file = open("astar_front.txt", "a")  # File to log front set
         self.visited_file = open("astar_visited.txt", "a")  # File to log visited vertices
 
-    def get_pos(self, x):
+    def get_pos(self, x: int) -> tuple[int, int]:
         """
         Convert vertex number to grid coordinates.
 
@@ -29,7 +29,7 @@ class AStar:
         coords = [(x - 1) // self.grid.cols, (x - 1) % self.grid.cols]
         return coords
     
-    def get_vertex(self, x, y):
+    def get_vertex(self, x: int, y: int) -> int:
         """
         Get the vertex number for the given grid coordinates.
 
@@ -42,7 +42,7 @@ class AStar:
         """
         return self.grid[x][y]
 
-    def heuristic(self, a, b):
+    def heuristic(self, a: int, b: int) -> float:
         """
         Calculate the heuristic (Euclidean distance) between two vertices.
 
@@ -57,7 +57,7 @@ class AStar:
         x2, y2 = self.get_pos(b)
         return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
-    def astar(self, start, end):
+    def run(self, start: int, end: int) -> float:
         """
         Run the A* algorithm to find the shortest path from start to end.
 
@@ -141,7 +141,7 @@ grid = Grid(rows, cols, obstacles)
 start_vertex = 16
 end_vertex = 32
 
-astar_instance = AStar(grid)
-result = astar_instance.astar(start_vertex, end_vertex)
+a_star = AStar(grid)
+result = a_star.run(start_vertex, end_vertex)
 
 print(f"Shortest distance from {start_vertex} to {end_vertex}: {result}")
