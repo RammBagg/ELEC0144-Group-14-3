@@ -31,6 +31,7 @@ class Grid:
     def is_valid(self, x: int, y: int) -> bool:
         '''
         Check if the coordinates are within the bounds of the grid.
+        
         :param x: the x-coordinate.
         :param y: the y-coordinate
 
@@ -55,8 +56,10 @@ class Grid:
     def get_pos(self, x: int) -> [int]:
         '''
         Given a value of a cell, find the position/coordinates of the cell.
+
         :param x: An integer value which represents the number of the cell 
                   in the grid, from when the grid was initialised. 
+
         :returns: A list with the first value being the x-coordinate, and
                   the second value being the y-coordinate.
         '''
@@ -66,8 +69,10 @@ class Grid:
     def get_vertex(self, x: int, y: int) -> int:
         '''
         Given the (x, y) coordinates, find which value represents the cells.
+
         :param x: Integer value for the x-coordinate.
         :param y: Integer value for the y-coordinate.
+
         :returns: The integer value stored in the cell.
         '''
         return self.layout[x][y]
